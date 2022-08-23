@@ -19,6 +19,7 @@ namespace TestRenderPipeline.Runtime.Scripts
             _scriptableRenderContext = pContext;
             _camera = pCamera;
             
+            PrepareBuffer();
             //剔除之前调用一下
             PrepareForSceneWindow();
             
@@ -46,11 +47,11 @@ namespace TestRenderPipeline.Runtime.Scripts
 
             //根据摄像机CameraClearFlags设置清楚参数
             var _cameraClearFlags = _camera.clearFlags;
-            _cmdBuffer.ClearRenderTarget((_cameraClearFlags & CameraClearFlags.Depth) != 0,
-                (_cameraClearFlags & CameraClearFlags.Color) != 0,
-                _camera.backgroundColor);
+            _cmdBuffer.ClearRenderTarget((_cameraClearFlags <= CameraClearFlags.Depth) ,
+                (_cameraClearFlags == CameraClearFlags.Color),
+                _cameraClearFlags == CameraClearFlags.Color ? _camera.backgroundColor.linear : Color.clear);
 
-            _cmdBuffer.BeginSample(_buffName);
+            _cmdBuffer.BeginSample(SampleName);
             ExecuteBuffer();
         }
 
@@ -83,7 +84,7 @@ namespace TestRenderPipeline.Runtime.Scripts
 
         void Submit()
         {
-            _cmdBuffer.EndSample(_buffName);
+            _cmdBuffer.EndSample(SampleName);
             ExecuteBuffer();
             _scriptableRenderContext.Submit();
         }

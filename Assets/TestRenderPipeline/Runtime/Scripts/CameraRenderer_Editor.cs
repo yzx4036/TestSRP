@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace TestRenderPipeline.Runtime.Scripts
@@ -9,9 +10,11 @@ namespace TestRenderPipeline.Runtime.Scripts
         partial void DrawUnsupportedShaders();
         partial void DrawGizmos();
         partial void PrepareForSceneWindow();
+        partial void PrepareBuffer();
 
 #if UNITY_EDITOR
 
+        string SampleName { get; set; }
         private static Material _errorMaterial;
 
         private static ShaderTagId[] legecyShaderTagIds =
@@ -61,6 +64,16 @@ namespace TestRenderPipeline.Runtime.Scripts
                 ScriptableRenderContext.EmitWorldGeometryForSceneView(_camera);
             }
         }
-    }
+
+        partial void PrepareBuffer()
+        {
+            Profiler.BeginSample("Editor Only");
+            _cmdBuffer.name = SampleName = _camera.name;
+            Profiler.EndSample();
+        }
+
+#else
+        private const string SampleName = _buffName;
 #endif
+    }
 }
