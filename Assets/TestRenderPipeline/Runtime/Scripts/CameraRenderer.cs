@@ -18,7 +18,10 @@ namespace TestRenderPipeline.Runtime.Scripts
         {
             _scriptableRenderContext = pContext;
             _camera = pCamera;
-
+            
+            //剔除之前调用一下
+            PrepareForSceneWindow();
+            
             if (!Cull())
             {
                 return;
